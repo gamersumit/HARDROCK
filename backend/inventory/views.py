@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics
 from account.mixins import AdminUserPermissionsMixin
 from .models import Inventory
@@ -6,16 +5,16 @@ from .serializers import InventorySerializer
 from rest_framework.response import Response
 import base64
 from rest_framework import permissions
-from rest_framework.pagination import LimitOffsetPagination
 # Create your views here.
 
 class InventoryDetailAPIView(generics.RetrieveAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-class InventoryAddItemView(generics.GenericAPIView):
+class InventoryAddItemView(AdminUserPermissionsMixin, generics.GenericAPIView):
+    queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-
     def post(self, request):
         # create a user
         try :
@@ -36,30 +35,27 @@ class InventoryAddItemView(generics.GenericAPIView):
         except:
             return Response({'status': True, 'message' : 'Registration Successful'}, status =200)
         
-class InventoryListAPIView(AdminUserPermissionsMixin, generics.ListAPIView):
+class InventoryListAPIView(generics.ListAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
-    pagination_class = LimitOffsetPagination
-
+    permission_classes = [permissions.IsAuthenticated]
 class InventoryBreakfastListAPIView(generics.ListAPIView):
     queryset = Inventory.objects.filter(category = 'breakfast')
     serializer_class = InventorySerializer
-    pagination_class = LimitOffsetPagination
-
+    permission_classes = [permissions.IsAuthenticated]
 class InventoryLunchListAPIView(generics.ListAPIView):
     queryset = Inventory.objects.filter(category = 'lunch')
     serializer_class = InventorySerializer
-    pagination_class = LimitOffsetPagination
-
+    permission_classes = [permissions.IsAuthenticated]
 class InventoryShakesListAPIView(generics.ListAPIView):
     queryset = Inventory.objects.filter(category = 'shakes')
     serializer_class = InventorySerializer
-    pagination_class = LimitOffsetPagination
-class InventoryUpdateAPIView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+class InventoryUpdateAPIView(AdminUserPermissionsMixin, generics.UpdateAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
 
-class InventoryDeleteAPIView(generics.DestroyAPIView):
+class InventoryDeleteAPIView(AdminUserPermissionsMixin, generics.DestroyAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
 

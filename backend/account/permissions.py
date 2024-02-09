@@ -1,8 +1,6 @@
 from rest_framework import permissions
 
 class AdminUserPermissions(permissions.DjangoModelPermissions) :
-    permission_queryset = None
-
     perms_map = {
        # 'GET': [],   // original
         'OPTIONS': [],
@@ -15,7 +13,7 @@ class AdminUserPermissions(permissions.DjangoModelPermissions) :
     }
 
     def has_permission(self, request, view):
-        if not request.user.is_admin :
-            return  False
+        if  request.user.is_admin :
+            return  True
         
-        return super().has_permission(request, view)
+        return False
