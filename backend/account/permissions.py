@@ -15,7 +15,7 @@ class AdminUserPermissions(permissions.DjangoModelPermissions) :
     }
 
     def has_permission(self, request, view):
-        if request.user.is_admin :
-            return  True
+        if not request.user.is_admin :
+            return  False
         
-        return False
+        return super().has_permission(request, view)
