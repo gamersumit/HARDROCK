@@ -36,7 +36,7 @@ class InventoryAddItemView(generics.GenericAPIView):
         except:
             return Response({'status': True, 'message' : 'Registration Successful'}, status =200)
         
-class InventoryListAPIView(generics.ListAPIView):
+class InventoryListAPIView(AdminUserPermissionsMixin, generics.ListAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     pagination_class = LimitOffsetPagination
