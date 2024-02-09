@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import datetime
+
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # third party packages
+    'rest_framework',
+    'rest_framework_simplejwt',
+
+    # internal apps
+    'account',
+    'inventory',
 ]
 
 MIDDLEWARE = [
@@ -77,8 +87,12 @@ WSGI_APPLICATION = 'harchome.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'hardrock_db',
+        'USER': 'hardrock',
+        'PASSWORD': os.getenv('hardrock_db_password'),
+        'HOST': 'dpg-cn2qa90l5elc73cicur0-a.singapore-postgres.render.com',
+        'PORT': '5432',  # Default PostgreSQL port
     }
 }
 
@@ -123,3 +137,29 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# our user model
+AUTH_USER_MODEL = 'account.CustomUser'
+
+# rest framework
+EST_FRAMEWORK = {
+    
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+
+    # "DEFAULT_PERMISSION_CLASSES": [
+    #     "rest_framework.permissions.IsAuthenticatedOrReadOnly"
+    # ],
+
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    # "PAGE_SIZE": 10
+
+}
+
+# jwt token
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ["Bearer"],
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes = 60),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours = 3),
+}
