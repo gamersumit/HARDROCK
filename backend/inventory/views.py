@@ -17,24 +17,16 @@ class InventoryAddItemView(AdminUserPermissionsMixin, generics.GenericAPIView):
     serializer_class = InventorySerializer
     def post(self, request):
         # create a user
-        try :
+        try:
+            print(request.data)
             serializer = self.serializer_class(data = request.data)
             serializer.is_valid(raise_exception = True)
-            item = serializer.save()
-            # return Response({'status': True, 'message' : 'Item added Successfully'}, status =200)
+            print(serializer.validated_data)
+            serializer.save()
+            return Response({'status': True, 'message' : 'Item added Successfully'}, status =200)
+        
         except Exception as e:
             return Response({'status': False, 'message': str(e)}, status = 400)
-
-        try :  
-            img = request.POST.get('img_source')
-            format, imgstr = img.split(';base64,')
-            base64.b64decode(imgstr)
-            item.img_source = request.data
-            item.save()
-            return Response({'status': True, 'message' : 'Registration Successful'}, status =200)
-        except:
-            return Response({'status': True, 'message' : 'Registration Successful'}, status =200)
-        
 class InventoryListAPIView(generics.ListAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
