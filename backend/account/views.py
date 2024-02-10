@@ -1,14 +1,11 @@
 
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from .serializers import CustomUserSerializer, PasswordSerializer, LoginSerializer
+from .serializers import CustomUserSerializer, LoginSerializer
 from .models import CustomUser
-from rest_framework_simplejwt.tokens import AccessToken
 from .utils import Utils
-from django.urls import reverse
 import json
-from django.contrib.auth.hashers import check_password, make_password
+
 
 # Create your views here.
 
