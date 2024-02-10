@@ -1,12 +1,15 @@
 # serializers.py
 from rest_framework import serializers
 from .models import Inventory
+# from drf_extra_fields.fields import Base64ImageField
 import base64
+from django.core.files.base import ContentFile
+
 
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['id', 'name', 'content', 'price', 'quantity', 'category']
+        fields = ['id', 'name', 'content', 'price', 'quantity', 'category', 'image']
 
     
     def validate_category(self, value):
@@ -14,24 +17,7 @@ class InventorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Empty category")
         
         else :
-            value = value.lower()
-            
+            value = value.lower() 
             if(value not in ['breakfast', 'lunch',  'shakes']) :
                raise serializers.ValidationError("Invalid category")
-            
             return value
-
-
-    # def validate_img_Source(self, img):
-    #     if not img :
-    #         return None
-
-    #     try:
-    #     # Split the Base64 data from the prefix
-    #         format, imgstr = img.split(';base64,')
-    #     # Decode the Base64 data
-    #         base64.b64decode(imgstr)
-    #         return imgstr
-        
-    #     except :
-    #         raise serializers.ValidationError("something wrong with image")
