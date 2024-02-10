@@ -7,7 +7,7 @@ from inventory.models import Inventory
 class Cart(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     product = models.ForeignKey(Inventory, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=0)
+    quantity = models.IntegerField(default=0)
     # Add any other fields you may need
 
     
