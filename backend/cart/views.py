@@ -23,7 +23,7 @@ class CartUpdateView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 product = request.data.get('product')
                
                 # fectch quantity if item
-                quantity = request.data.get('quantity', 1)
+                quantity = request.data.get('quantity')
 
                 # data to serialize
                 data = {'user' : user, "product" : product, "quantity" : quantity}
@@ -34,7 +34,7 @@ class CartUpdateView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 # if item already exist
                 if Cart.objects.filter(user = user, product = product).exists() :
                     cart_item = Cart.objects.get(user = user, product = product)
-                    cart_item.quantity += quantity
+                    cart_item.quantity = quantity
 
                     # stock availblity : 
                     product = Inventory.objects.get(id = product)  
@@ -55,13 +55,20 @@ class CartUpdateView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 return Response({'status': False, 'message' : str(e)}, status = 400)
       
 class CartListAPIView(generics.ListAPIView):
+    
     serializer_class = CartSerializer
     permission_class = [permissions.IsAuthenticated]
    
     def get_queryset(self):
+        
         token = self.request.headers.get('Authorization').split()[1]
+        print(token)
         user = AccessToken(token).payload.get('user_id')
-        return Cart.objects.filter(user=user)
+        cartitem = Cart.objects.filter(user=user)
+        return cartitem
+    
+    def get(self, request, *args, **kwargs):
+         return super().get(request, *args, **kwargs)
     
 class CartEmptyCartView(CustomerUserPermissionsMixin, generics.GenericAPIView):
     serializer_class = CartSerializer

@@ -16,7 +16,7 @@ class InventoryDetailAPIView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 # to add item to inventory
-class InventoryAddItemView( generics.GenericAPIView):
+class InventoryAddItemView(AdminUserPermissionsMixin, generics.GenericAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
 
@@ -46,17 +46,6 @@ class InventoryListAPIView(generics.ListAPIView):
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
-# to get items only releated to breakfast
-    
-# class YourListView(APIView):
-#     def get(self, request):
-#     # Filter the queryset to include only the particular items you want
-#     queryset = Inventory.objects.filter(category='breakfast')
-
-#     # Serialize the filtered queryset
-#     serializer = YourModelSerializer(queryset, many=True)
-
-#     return Response(serializer.data)
 class InventoryBreakfastListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Inventory.objects.filter(category='breakfast')
@@ -85,6 +74,30 @@ class InventoryShakesListAPIView(generics.ListAPIView):
 class InventoryUpdateAPIView(AdminUserPermissionsMixin, generics.UpdateAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
+
+    def put(self, request):
+        try:
+            # convert base64_image to raw image
+
+            if(request.data['image']):
+                try :
+                    image_base64 = request.data.pop('image')
+                    image = InvUtils.base64_to_image(image_base64, request.data['image_name'])
+
+                    # update raw data
+                    request.data['image'] = image
+                except Exception as e :
+                    return Response({'status': False, 'message': str(e)}, status = 400)
+            # serialize data
+            serializer = self.serializer_class(data = request.data)
+            serializer.is_valid(raise_exception = True)
+            serializer.save()
+
+            #return response
+            return Response({'status': True, 'message' : 'Item Updated Successfully'}, status =200)
+           
+        except Exception as e:
+            return Response({'status': False, 'message': str(e)}, status = 400)
 
 # to delete an item from inventory
 class InventoryDeleteAPIView(AdminUserPermissionsMixin, generics.DestroyAPIView):
