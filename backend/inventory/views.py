@@ -46,21 +46,27 @@ class InventoryListAPIView(generics.ListAPIView):
 
 # to get items only releated to breakfast
 class InventoryBreakfastListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.filter(category = 'breakfast')
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Inventory.objects.filter(category='breakfast')
 
 # to get items only releated to lunch
 class InventoryLunchListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.filter(category = 'lunch')
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        return Inventory.objects.filter(category='lunch')
 
 # to get items only releated to shakes
 class InventoryShakesListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.filter(category = 'shakes')
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Inventory.objects.filter(category='shakes')
 
 # to update item fields
 class InventoryUpdateAPIView(AdminUserPermissionsMixin, generics.UpdateAPIView):
