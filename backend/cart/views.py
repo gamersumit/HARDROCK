@@ -8,10 +8,8 @@ from .serializers import CartSerializer
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.decorators import api_view
 
-
-class CartAddItemView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
+class CartUpdateView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
     
@@ -25,7 +23,7 @@ class CartAddItemView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 product = request.data.get('product')
                
                 # fectch quantity if item
-                quantity = request.data.get('quantity', 1)
+                quantity = request.data.get('quantity')
 
                 # data to serialize
                 data = {'user' : user, "product" : product, "quantity" : quantity}
@@ -36,7 +34,7 @@ class CartAddItemView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 # if item already exist
                 if Cart.objects.filter(user = user, product = product).exists() :
                     cart_item = Cart.objects.get(user = user, product = product)
-                    cart_item.quantity += quantity
+                    cart_item.quantity = quantity
 
                     # stock availblity : 
                     product = Inventory.objects.get(id = product)  
@@ -57,17 +55,25 @@ class CartAddItemView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
                 return Response({'status': False, 'message' : str(e)}, status = 400)
       
 class CartListAPIView(generics.ListAPIView):
+    
     serializer_class = CartSerializer
     permission_class = [permissions.IsAuthenticated]
    
     def get_queryset(self):
+        
         token = self.request.headers.get('Authorization').split()[1]
+        print(token)
         user = AccessToken(token).payload.get('user_id')
-        return Cart.objects.filter(user=user)
+        cartitem = Cart.objects.filter(user=user)
+        return cartitem
+    
+    def get(self, request, *args, **kwargs):
+         return super().get(request, *args, **kwargs)
     
 class CartEmptyCartView(CustomerUserPermissionsMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
+    permission_class = [permissions.IsAuthenticated]
     
     def delete(self, request):
         try:
@@ -84,6 +90,6 @@ class CartEmptyCartView(CustomerUserPermissionsMixin, generics.GenericAPIView):
 
 
 # #shortnaming
-cart_add_view = CartAddItemView.as_view()
+cart_update_view = CartUpdateView.as_view()
 cart_list_view =  CartListAPIView.as_view()
 cart_empty_view = CartEmptyCartView.as_view()

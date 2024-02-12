@@ -70,6 +70,7 @@ ROOT_URLCONF = 'harchome.urls'
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
     'http://127.0.0.1:3000',
+    'http://localhost:5173'
                         ]
 
 TEMPLATES = [
@@ -171,6 +172,6 @@ REST_FRAMEWORK = {
 # jwt token
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ["Bearer"],
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes = 60),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(hours = 3),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(days = 2),
+    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days = 7),
 }
