@@ -66,6 +66,7 @@ class CartListAPIView(generics.ListAPIView):
 class CartEmptyCartView(CustomerUserPermissionsMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
+    permission_class = [permissions.IsAuthenticated]
     
     def delete(self, request):
         try:

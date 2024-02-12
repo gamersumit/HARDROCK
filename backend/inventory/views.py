@@ -5,6 +5,7 @@ from .serializers import InventorySerializer
 from rest_framework.response import Response
 from .inventory_utils import InvUtils
 from rest_framework import permissions
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -18,6 +19,7 @@ class InventoryDetailAPIView(generics.RetrieveAPIView):
 class InventoryAddItemView( generics.GenericAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
+
     def post(self, request):
         try:
             # convert base64_image to raw image
@@ -45,28 +47,39 @@ class InventoryListAPIView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 # to get items only releated to breakfast
-class InventoryBreakfastListAPIView(generics.ListAPIView):
-    serializer_class = InventorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+# class YourListView(APIView):
+#     def get(self, request):
+#     # Filter the queryset to include only the particular items you want
+#     queryset = Inventory.objects.filter(category='breakfast')
 
-    def get_queryset(self):
-        return Inventory.objects.filter(category='breakfast')
+#     # Serialize the filtered queryset
+#     serializer = YourModelSerializer(queryset, many=True)
+
+#     return Response(serializer.data)
+class InventoryBreakfastListAPIView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Inventory.objects.filter(category='breakfast')
+    serializer_class = InventorySerializer
+    
+
 
 # to get items only releated to lunch
 class InventoryLunchListAPIView(generics.ListAPIView):
+    queryset = Inventory.objects.filter(category='lunch')
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
     
-    def get_queryset(self):
-        return Inventory.objects.filter(category='lunch')
+    
 
 # to get items only releated to shakes
 class InventoryShakesListAPIView(generics.ListAPIView):
+    queryset = Inventory.objects.filter(category='shakes')
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        return Inventory.objects.filter(category='shakes')
+    
+   
 
 # to update item fields
 class InventoryUpdateAPIView(AdminUserPermissionsMixin, generics.UpdateAPIView):
@@ -83,8 +96,8 @@ class InventoryDeleteAPIView(AdminUserPermissionsMixin, generics.DestroyAPIView)
 inventory_create_view = InventoryAddItemView.as_view()
 inventory_detail_view = InventoryDetailAPIView.as_view()
 inventory_list_view =   InventoryListAPIView.as_view()
-inventory_breakfast_list_view =   InventoryListAPIView.as_view()
-inventory_shakes_list_view =   InventoryListAPIView.as_view()
-inventory_lunch_list_view =   InventoryListAPIView.as_view()
+inventory_breakfast_list_view =   InventoryBreakfastListAPIView.as_view()
+inventory_shakes_list_view =   InventoryShakesListAPIView.as_view()
+inventory_lunch_list_view =   InventoryLunchListAPIView.as_view()
 inventory_update_view = InventoryUpdateAPIView.as_view()
 inventory_delete_view = InventoryDeleteAPIView.as_view()
