@@ -34,17 +34,7 @@ class PasswordSerializer(serializers.ModelSerializer):
     
 
 class LoginSerializer(serializers.Serializer):
-    password = serializers.CharField(max_length=128, min_length=8, write_only=True)
-    email = serializers.EmailField()
-    is_admin = serializers.BooleanField()
+    password = serializers.CharField(max_length=128, write_only=True, required=True, allow_null=False, allow_blank=False)
+    email = serializers.EmailField(required=True, allow_blank=False, allow_null=False)
+    is_admin = serializers.BooleanField(required=True, allow_null=False)
 
-
-    def validate(self, attrs):
-        password = attrs.get('password', None)
-        email = attrs.get('email', None)
-        is_admin = attrs.get('is_admin', None)
-
-        if (email is None) or (password is None) or (is_admin is None) :
-            raise serializers.ValidationError("Missing Fields")
-
-        return attrs

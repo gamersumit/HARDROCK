@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .serializers import CustomUserSerializer, LoginSerializer
 from .models import CustomUser
 from .utils import Utils
-import json
+
 
 
 # Create your views here.
@@ -42,34 +42,27 @@ class LoginView(generics.GenericAPIView) :
     serializer_class = LoginSerializer
 
     def post(self, request):
+
+        serializer = self.serializer_class(data = request.data)
+        serializer.is_valid(raise_exception = True)
+       
         # get login data from request
-        request_body_str = request.body.decode('utf-8')
+        email = serializer.validated_data.get('email')
+        password = serializer.validated_data.get('password')
+        is_admin = serializer.validated_data.get('is_admin')
 
-        # Parse the JSON data
-        data = json.loads(request_body_str)
 
-        # Extract the values
-        email = data.get('email', None)
-        password = data.get('password', None)
-        is_admin = data.get('is_admin', None)    
-
-        if (email is None) or (password is None) or (is_admin is None) :
-             return Response({'status': False, 'user': None,'message' : 'provided crdentials are not in proper format'}, status = 400)
-        
         if CustomUser.objects.filter(email = email).exists():
             user = CustomUser.objects.get(email=email)
-            print(user.is_admin)
-            print(is_admin)
             if user.is_admin == is_admin:
 
                 if user.check_password(password):
-                
                     token = Utils.generate_token(user)
                     return Response({'status': True, 'token' : token, 'message' : 'Logged in Successfully'}, status =200)
        
                 else :
                     return Response({'status': False, 'message' : 'Invalid Password'}, status = 400)
-                
+   
             else :
                 return Response({'status': False, 'message' : 'User is trying to login with different status'}, status = 400)
 
