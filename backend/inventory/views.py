@@ -42,33 +42,19 @@ class InventoryAddItemView(AdminUserPermissionsMixin, generics.GenericAPIView):
 
 # to get all the items from inventory/menu
 class InventoryListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class InventoryBreakfastListAPIView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    queryset = Inventory.objects.filter(category='breakfast')
-    serializer_class = InventorySerializer
-    
+    def get_queryset(self):
+        category = self.kwargs.get('category')
+        if category :
+            queryset = Inventory.objects.filter(category = category.lower())
 
+        else :
+            queryset = Inventory.objects.all()
+        
+        return queryset
 
-# to get items only releated to lunch
-class InventoryLunchListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.filter(category='lunch')
-    serializer_class = InventorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
-    
-
-# to get items only releated to shakes
-class InventoryShakesListAPIView(generics.ListAPIView):
-    queryset = Inventory.objects.filter(category='shakes')
-    serializer_class = InventorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    
-   
 
 # to update item fields
 class InventoryUpdateAPIView(AdminUserPermissionsMixin, generics.UpdateAPIView):
