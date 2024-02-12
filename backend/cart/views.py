@@ -8,10 +8,8 @@ from .serializers import CartSerializer
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.decorators import api_view
 
-
-class CartAddItemView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
+class CartUpdateView(CustomerUserPermissionsMixin, generics.GenericAPIView) :
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
     
@@ -84,6 +82,6 @@ class CartEmptyCartView(CustomerUserPermissionsMixin, generics.GenericAPIView):
 
 
 # #shortnaming
-cart_add_view = CartAddItemView.as_view()
+cart_update_view = CartUpdateView.as_view()
 cart_list_view =  CartListAPIView.as_view()
 cart_empty_view = CartEmptyCartView.as_view()
